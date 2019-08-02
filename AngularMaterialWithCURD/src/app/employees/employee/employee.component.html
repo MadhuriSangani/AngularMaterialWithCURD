@@ -1,17 +1,26 @@
-<form [formGroup]="service.form" class="normal-form"> 
+<mat-toolbar>
+    <span>{{service.form.controls['$key'].value?"Modify Employee":"New Employee"}}</span>
+    <span class="fill-remaining-space"></span>
+    <button class="btn-dialog-close" mat-raised-button (click)="onClose()" tabIndex="-1"><mat-icon>clear</mat-icon></button>
+</mat-toolbar>
+<form [formGroup]="service.form" class="normal-form" (submit)="onSubmit()"> 
     <mat-grid-list cols="2" rowHeight="300px">
         <mat-grid-tile>
             <div class="controles-container">
                 <input type="hidden" formControlName="$key">
-                <mat-form-field appearance="outline">
-                    <mat-label>Full Name</mat-label>
-                    <input formControlName="fullName" matInput >
+                <mat-form-field>
+                    <!-- <mat-label>Full Name*</mat-label> -->
+                    <input formControlName="fullName" matInput placeholder="Full Name*">
+                    <mat-error>This Field is Mendatory.</mat-error>
                 </mat-form-field>
                 <mat-form-field>
                     <input formControlName="email" matInput placeholder="Email">
+                    <mat-error>Invalid Email Address.</mat-error>
                 </mat-form-field>
                 <mat-form-field>
-                    <input formControlName="mobile" matInput placeholder="Mobile No">
+                    <input formControlName="mobile" matInput placeholder="Mobile No*">
+                    <mat-error *ngIf = "service.form.controls['mobile'].errors?.required">This Field is Mandatory.</mat-error>
+                    <mat-error *ngIf = "service.form.controls['mobile'].errors?.minlength">Minimun 8 charachter needed.</mat-error>
                 </mat-form-field>
                 <mat-form-field>
                     <input formControlName="city" matInput placeholder="City">
@@ -30,8 +39,8 @@
                 <mat-form-field>
                     <mat-select formControlName="department" placeholder="Department">
                         <mat-option>None</mat-option>
-                        <ng-container *ngFor="let department of departments">
-                            <mat-option value="{{department.id}}">{{department.value}}</mat-option>
+                        <ng-container *ngFor="let department of departmentservice.array">
+                            <mat-option value="{{department.$key}}">{{department.code}}-{{department.name}}</mat-option>
                         </ng-container>
                     </mat-select>
                 </mat-form-field>
@@ -44,8 +53,8 @@
                     <mat-checkbox formControlName="isPermanent">Permanent Employee</mat-checkbox>
                 </div>
                 <div class="button-row">
-                    <button type="submit" mat-raised-button color="primary">Submit</button>
-                    <button type="reset" mat-raised-button color="warn">Clear</button>
+                    <button type="submit" mat-raised-button color="primary" [disabled]="service.form.invalid">Submit</button>
+                    <button type="reset" mat-raised-button color="warn" (click)="onClear()">Clear</button>
                 </div>
             </div>
         </mat-grid-tile>
